@@ -35,4 +35,8 @@ const (
 	AppMeshProxyEgressPort  = "15001"
 	AppMeshProxyIngressPort = "15000"
 	AppMeshProxyUID         = "1337"
+
+	// K8s constants
+
+	K8sPodServiceAccountSecretMountPath = "/var/run/secrets/kubernetes.io/serviceaccount"
 )

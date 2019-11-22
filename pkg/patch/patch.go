@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/aws/aws-app-mesh-inject/pkg/config"
+	"k8s.io/klog"
 )
 
 const (
@@ -107,7 +108,7 @@ func GeneratePatch(meta Meta) ([]byte, error) {
 		patches = append(patches, j)
 	}
 
-	fmt.Println(patches)
+	klog.V(3).Infof("Patches = %s", patches)
 
 	return []byte(fmt.Sprintf("[%s]", strings.Join(patches, ","))), nil
 }

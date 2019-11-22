@@ -3,6 +3,7 @@ package patch
 import (
 	"bufio"
 	"bytes"
+	corev1 "k8s.io/api/core/v1"
 	"text/template"
 )
 
@@ -38,6 +39,10 @@ const envoyContainerTemplate = `
       "value": "/tmp/envoy/envoyconf.yaml"
     }{{ end }},
     {
+      "name": "AWS_ROLE_SESSION_NAME",
+      "value": "{{ .VirtualNodeName }}"
+    },
+    {
       "name": "AWS_REGION",
       "value": "{{ .Region }}"
     }{{ if .InjectXraySidecar }},
@@ -53,13 +58,18 @@ const envoyContainerTemplate = `
       "name": "ENABLE_ENVOY_DOG_STATSD",
       "value": "1"
     }{{ end }}
-  ]{{ if or .EnableJaegerTracing .EnableDatadogTracing }},
+  ],
   "volumeMounts": [
+    {{ if .ServiceAccountVolumeMount }}{
+      "mountPath": "{{ .ServiceAccountVolumeMount.MountPath }}",
+      "name": "{{ .ServiceAccountVolumeMount.Name }}",
+      "readOnly": {{ .ServiceAccountVolumeMount.ReadOnly }}
+    }{{ end }}{{ if or .EnableJaegerTracing .EnableDatadogTracing }}{{ if .ServiceAccountVolumeMount }},{{ end }}
     {
       "mountPath": "/tmp/envoy",
       "name": "envoy-tracing-config"
-    }
-  ]{{ end }},
+    }{{ end }}
+  ],
   "resources": {
     "requests": {
       "cpu": "{{ .CpuRequests }}",
@@ -81,6 +91,20 @@ const xrayDaemonContainerTemplate = `
       "name": "xray",
       "protocol": "UDP"
     }
+  ],
+  "env": [
+    {
+      "name": "AWS_ROLE_SESSION_NAME",
+      "value": "{{ .VirtualNodeName }}"
+    }
+  ],
+  "volumeMounts": [
+    {{ if .ServiceAccountVolumeMount }}
+    {
+	  "mountPath": "{{ .ServiceAccountVolumeMount.MountPath }}",
+	  "name": "{{ .ServiceAccountVolumeMount.Name }}",
+	  "readOnly": {{ .ServiceAccountVolumeMount.ReadOnly }}
+    }{{ end }}
   ],
   "resources": {
     "requests": {
@@ -109,6 +133,10 @@ type SidecarMeta struct {
 	InjectXraySidecar    bool
 	EnableStatsTags      bool
 	EnableStatsD         bool
+
+	//ServiceAccountVolumeMount is used to configure sidecars to use app container's SA.
+	//This is necessary to allow envoy-proxy, x-ray-daemon and other sidecars to use IRSA to get AWS credentials.
+	ServiceAccountVolumeMount *corev1.VolumeMount
 }
 
 func renderSidecars(meta SidecarMeta) ([]string, error) {

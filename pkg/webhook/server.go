@@ -265,23 +265,24 @@ func (s *Server) mutate(receivedAdmissionReview v1beta1.AdmissionReview) *v1beta
 			CpuRequests:        s.Config.SidecarCpu,
 		},
 		Sidecar: patch.SidecarMeta{
-			VirtualNodeName:      name,
-			ContainerImage:       s.Config.SidecarImage,
-			LogLevel:             s.Config.LogLevel,
-			Region:               s.Config.Region,
-			Preview:              preview,
-			MeshName:             meshName,
-			MemoryRequests:       memoryRequest,
-			CpuRequests:          cpuRequest,
-			EnableJaegerTracing:  s.Config.EnableJaegerTracing,
-			JaegerAddress:        s.Config.JaegerAddress,
-			JaegerPort:           s.Config.JaegerPort,
-			EnableDatadogTracing: s.Config.EnableDatadogTracing,
-			DatadogAddress:       s.Config.DatadogAddress,
-			DatadogPort:          s.Config.DatadogPort,
-			InjectXraySidecar:    s.Config.InjectXraySidecar,
-			EnableStatsTags:      s.Config.EnableStatsTags,
-			EnableStatsD:         s.Config.EnableStatsD,
+			VirtualNodeName:           name,
+			ContainerImage:            s.Config.SidecarImage,
+			LogLevel:                  s.Config.LogLevel,
+			Region:                    s.Config.Region,
+			Preview:                   preview,
+			MeshName:                  meshName,
+			MemoryRequests:            memoryRequest,
+			CpuRequests:               cpuRequest,
+			EnableJaegerTracing:       s.Config.EnableJaegerTracing,
+			JaegerAddress:             s.Config.JaegerAddress,
+			JaegerPort:                s.Config.JaegerPort,
+			EnableDatadogTracing:      s.Config.EnableDatadogTracing,
+			DatadogAddress:            s.Config.DatadogAddress,
+			DatadogPort:               s.Config.DatadogPort,
+			InjectXraySidecar:         s.Config.InjectXraySidecar,
+			EnableStatsTags:           s.Config.EnableStatsTags,
+			EnableStatsD:              s.Config.EnableStatsD,
+			ServiceAccountVolumeMount: getPodServiceAccountVolumeMount(pod.Spec.Containers),
 		},
 	})
 	if err != nil {
@@ -385,6 +386,18 @@ func getPortsFromContainers(containers []corev1.Container) []string {
 	}
 
 	return parts
+}
+
+//getPodServiceAccountVolumeMount finds the volumeMount corresponding to SA used by pod.
+func getPodServiceAccountVolumeMount(containers []corev1.Container) *corev1.VolumeMount {
+	for _, c := range containers {
+		for _, vm := range c.VolumeMounts {
+			if vm.MountPath == config.K8sPodServiceAccountSecretMountPath {
+				return &vm
+			}
+		}
+	}
+	return nil
 }
 
 // get all the ports for that container
