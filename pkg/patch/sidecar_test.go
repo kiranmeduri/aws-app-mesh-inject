@@ -136,6 +136,7 @@ func checkEnvoy(t *testing.T, m map[string]interface{}, meta SidecarMeta) {
 	expectedEnvs := map[string]string{
 		"APPMESH_VIRTUAL_NODE_NAME": fmt.Sprintf("mesh/%s/virtualNode/%s", meta.MeshName, meta.VirtualNodeName),
 		"AWS_REGION":                meta.Region,
+		"AWS_ROLE_SESSION_NAME":     meta.VirtualNodeName,
 		"ENVOY_LOG_LEVEL":           meta.LogLevel,
 		"APPMESH_PREVIEW":           meta.Preview,
 	}

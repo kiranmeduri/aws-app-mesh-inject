@@ -38,6 +38,10 @@ const envoyContainerTemplate = `
       "value": "/tmp/envoy/envoyconf.yaml"
     }{{ end }},
     {
+      "name": "AWS_ROLE_SESSION_NAME",
+      "value": "{{ .VirtualNodeName }}"
+    },
+    {
       "name": "AWS_REGION",
       "value": "{{ .Region }}"
     }{{ if .InjectXraySidecar }},
