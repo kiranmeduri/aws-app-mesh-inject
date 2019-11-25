@@ -280,6 +280,7 @@ func (s *Server) mutate(receivedAdmissionReview v1beta1.AdmissionReview) *v1beta
 			DatadogAddress:       s.Config.DatadogAddress,
 			DatadogPort:          s.Config.DatadogPort,
 			InjectXraySidecar:    s.Config.InjectXraySidecar,
+			XrayContainerImage:   s.Config.XrayContainerImage,
 			EnableStatsTags:      s.Config.EnableStatsTags,
 			EnableStatsD:         s.Config.EnableStatsD,
 		},

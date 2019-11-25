@@ -66,6 +66,7 @@ func init() {
 	flag.StringVar(&cfg.DatadogAddress, "datadog-address", "datadog.appmesh-system", "Datadog Agent address")
 	flag.StringVar(&cfg.DatadogPort, "datadog-port", "8126", "Datadog Agent tracing port")
 	flag.BoolVar(&cfg.InjectXraySidecar, "inject-xray-sidecar", false, "Enable Envoy X-Ray tracing integration and injects xray-daemon as sidecar")
+	flag.StringVar(&cfg.XrayContainerImage, "xray-container-image", "amazon/aws-xray-daemon", "X-Ray daemon container image")
 	flag.BoolVar(&cfg.EnableStatsTags, "enable-stats-tags", false, "Enable Envoy to tag stats")
 	flag.BoolVar(&cfg.EnableStatsD, "enable-statsd", false, "If enabled, Envoy will send DogStatsD metrics to 127.0.0.1:8125")
 	flag.BoolVar(&cfg.InjectStatsDExporterSidecar, "inject-statsd-exporter-sidecar", false, "This flag is deprecated and does nothing")

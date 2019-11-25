@@ -71,7 +71,7 @@ const envoyContainerTemplate = `
 const xrayDaemonContainerTemplate = `
 {
   "name": "xray-daemon",
-  "image": "amazon/aws-xray-daemon",
+  "image": "{{ .XrayContainerImage }}",
   "securityContext": {
     "runAsUser": 1337
   },
@@ -113,6 +113,7 @@ type SidecarMeta struct {
 	DatadogAddress       string
 	DatadogPort          string
 	InjectXraySidecar    bool
+	XrayContainerImage   string
 	EnableStatsTags      bool
 	EnableStatsD         bool
 }

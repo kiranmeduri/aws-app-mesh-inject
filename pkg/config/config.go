@@ -25,6 +25,7 @@ type Config struct {
 
 	// Observability settings
 	InjectXraySidecar           bool
+	XrayContainerImage          string
 	EnableStatsTags             bool
 	EnableStatsD                bool
 	InjectStatsDExporterSidecar bool
